@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!--
+  Provisional VISUAL mounting model; units m/rad.
+  The adapter STL has been centered at its bounding-box center.
+  Its original cylinder axis was X. Default rotation maps +X to +Z.
+  Verify mounting directions and flange interfaces against hardware/CAD.
+  -->
+  <xacro:macro name="sensone_stack" params="
+    parent prefix:=''
+    adapter_xyz:='0 0 0.015' adapter_rpy:='0 0 0'
+    sensor_xyz:='0 0 0.034' sensor_rpy:='0 0 0'
+    custom_adapter_xyz:='0 0 0.03808' custom_adapter_rpy:='-1.5707963267948966 1.5707963267948966 0'
+    gripper_xyz:='-0.01904 0 0' gripper_rpy:='1.5707963267948966 0 -1.5707963267948966'
+    sensor_mesh_yaw:='0.785398' adapter_mesh_roll:='-1.964545'
+    ft_xyz:='0 0 0' ft_rpy:='0 0 0'">
+
+    <link name="${prefix}kr13897_link">
+      <visual><geometry><mesh filename="package://gen3_sensone_description/meshes/kr13897_centered.stl" scale="0.001 0.001 0.001"/></geometry></visual>
+    </link>
+    <joint name="${prefix}kr13897_joint" type="fixed">
+      <parent link="${parent}"/><child link="${prefix}kr13897_link"/>
+      <origin xyz="${adapter_xyz}" rpy="${adapter_rpy}"/>
+    </joint>
+
+    <link name="${prefix}sensone_link">
+      <visual><origin xyz="0 0 0" rpy="0 0 ${sensor_mesh_yaw}"/><geometry><mesh filename="package://gen3_sensone_description/meshes/sensone_centered.stl" scale="0.001 0.001 0.001"/></geometry></visual>
+    </link>
+    <joint name="${prefix}sensone_mount_joint" type="fixed">
+      <parent link="${prefix}kr13897_link"/><child link="${prefix}sensone_link"/>
+      <origin xyz="${sensor_xyz}" rpy="${sensor_rpy}"/>
+    </joint>
+
+    <link name="${prefix}sensone_ft_frame"/>
+    <joint name="${prefix}sensone_ft_joint" type="fixed">
+      <parent link="${prefix}sensone_link"/><child link="${prefix}sensone_ft_frame"/>
+      <origin xyz="${ft_xyz}" rpy="${ft_rpy}"/>
+    </joint>
+
+    <link name="${prefix}bota_to_robotiq_adapter_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${adapter_mesh_roll} 0 0"/>
+        <geometry>
+          <mesh filename="package://gen3_sensone_description/meshes/bota_to_robotiq_centered.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="${prefix}bota_to_robotiq_adapter_joint" type="fixed">
+      <parent link="${prefix}sensone_link"/>
+      <child link="${prefix}bota_to_robotiq_adapter_link"/>
+      <origin xyz="${custom_adapter_xyz}" rpy="${custom_adapter_rpy}"/>
+    </joint>
+
+    <link name="${prefix}robotiq_mount_link"/>
+    <joint name="${prefix}robotiq_mount_joint" type="fixed">
+      <parent link="${prefix}bota_to_robotiq_adapter_link"/>
+      <child link="${prefix}robotiq_mount_link"/>
+      <origin xyz="${gripper_xyz}" rpy="${gripper_rpy}"/>
+    </joint>
+  </xacro:macro>
+</robot>

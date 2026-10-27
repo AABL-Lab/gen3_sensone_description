@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot name="gen3_sensone_2f85" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Visualization-first: fake hardware by default. Do not launch controllers from this file. -->
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="vision" default="false"/>
+  <xacro:arg name="robot_ip" default="192.168.1.10"/>
+  <xacro:arg name="use_fake_hardware" default="true"/>
+  <xacro:arg name="use_internal_bus_gripper_comm" default="false"/>
+  <xacro:arg name="gripper_com_port" default="/dev/ttyUSB0"/>
+  <xacro:arg name="sensor_mesh_yaw" default="0.785398"/>
+  <xacro:arg name="adapter_mesh_roll" default="-1.964543"/>
+  <xacro:property name="prefix" value="$(arg prefix)"/>
+  <xacro:include filename="$(find kortex_description)/arms/gen3/7dof/urdf/gen3_macro.xacro"/>
+  <xacro:include filename="$(find kortex_description)/grippers/robotiq_2f_85/urdf/robotiq_2f_85_macro.xacro"/>
+  <xacro:include filename="$(find gen3_sensone_description)/urdf/sensone_stack.xacro"/>
+  <link name="world"/>
+  <xacro:load_arm parent="world" dof="7" vision="$(arg vision)"
+    prefix="${prefix}" robot_ip="$(arg robot_ip)"
+    gripper="robotiq_2f_85" gripper_joint_name="finger_joint"
+    use_fake_hardware="$(arg use_fake_hardware)"
+    use_internal_bus_gripper_comm="$(arg use_internal_bus_gripper_comm)">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:load_arm>
+  <xacro:sensone_stack parent="${prefix}end_effector_link" prefix="${prefix}"
+    sensor_mesh_yaw="$(arg sensor_mesh_yaw)"
+    adapter_mesh_roll="$(arg adapter_mesh_roll)"/>
+  <xacro:load_gripper parent="${prefix}robotiq_mount_link"
+    prefix="${prefix}" use_fake_hardware="$(arg use_fake_hardware)"
+    use_internal_bus_gripper_comm="$(arg use_internal_bus_gripper_comm)"
+    com_port="$(arg gripper_com_port)"/>
+</robot>
