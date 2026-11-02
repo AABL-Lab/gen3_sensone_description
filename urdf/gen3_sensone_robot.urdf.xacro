@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot name="gen3_sensone_2f85" xmlns:xacro="http://ros.org/wiki/xacro">
-  <!-- Visualization-first: fake hardware by default. Do not launch controllers from this file. -->
+  <!-- Visualization-first with provisional accessory inertias; fake hardware by default. Do not launch controllers from this file. -->
   <xacro:arg name="prefix" default=""/>
   <xacro:arg name="vision" default="false"/>
   <xacro:arg name="robot_ip" default="192.168.1.10"/>
