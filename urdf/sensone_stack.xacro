@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <!--
-  Provisional VISUAL mounting model; units m/rad.
-  The adapter STL has been centered at its bounding-box center.
-  Its original cylinder axis was X. Default rotation maps +X to +Z.
-  Verify mounting directions and flange interfaces against hardware/CAD.
-  -->
+  <!-- Inertial-enabled provisional mounting model; SI units. Keep all existing fixed joint transforms. -->
   <xacro:macro name="sensone_stack" params="
     parent prefix:=''
     adapter_xyz:='0 0 0.015' adapter_rpy:='0 0 0'
@@ -16,6 +11,13 @@
     ft_xyz:='0 0 0' ft_rpy:='0 0 0'">
 
     <link name="${prefix}kr13897_link">
+      <!-- KR13890 flange ONLY, official mass 0.102 kg; PCB, fasteners and cable excluded. -->
+      <inertial>
+        <origin xyz="0.00132982 0.00050950 0.00229754" rpy="0 0 0"/>
+        <mass value="0.102"/>
+        <inertia ixx="4.59163e-05" ixy="6.91156e-08" ixz="1.44648e-06"
+                 iyy="4.84192e-05" iyz="9.00405e-07" izz="7.49435e-05"/>
+      </inertial>
       <visual><geometry><mesh filename="package://gen3_sensone_description/meshes/kr13897_centered.stl" scale="0.001 0.001 0.001"/></geometry></visual>
     </link>
     <joint name="${prefix}kr13897_joint" type="fixed">
@@ -24,6 +26,13 @@
     </joint>
 
     <link name="${prefix}sensone_link">
+      <!-- Mass from Bota specification; COM centered and inertia from approximate CAD model. -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.235"/>
+        <inertia ixx="9.1647e-05" ixy="0" ixz="0"
+                 iyy="8.6360e-05" iyz="0" izz="1.2618e-04"/>
+      </inertial>
       <visual><origin xyz="0 0 0" rpy="0 0 ${sensor_mesh_yaw}"/><geometry><mesh filename="package://gen3_sensone_description/meshes/sensone_centered.stl" scale="0.001 0.001 0.001"/></geometry></visual>
     </link>
     <joint name="${prefix}sensone_mount_joint" type="fixed">
@@ -38,11 +47,16 @@
     </joint>
 
     <link name="${prefix}bota_to_robotiq_adapter_link">
+      <!-- Mass from prior CAD screenshot, inertia estimated from watertight STL. -->
+      <inertial>
+        <origin xyz="0.00244508 -0.00022498 0.00106984" rpy="0 0 0"/>
+        <mass value="0.07302837"/>
+        <inertia ixx="6.24688784e-05" ixy="9.34805031e-08" ixz="6.79732354e-07"
+                 iyy="4.05106040e-05" iyz="-6.64108734e-09" izz="4.39544381e-05"/>
+      </inertial>
       <visual>
         <origin xyz="0 0 0" rpy="${adapter_mesh_roll} 0 0"/>
-        <geometry>
-          <mesh filename="package://gen3_sensone_description/meshes/bota_to_robotiq_centered.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
+        <geometry><mesh filename="package://gen3_sensone_description/meshes/bota_to_robotiq_centered.stl" scale="0.001 0.001 0.001"/></geometry>
       </visual>
     </link>
     <joint name="${prefix}bota_to_robotiq_adapter_joint" type="fixed">
@@ -51,6 +65,7 @@
       <origin xyz="${custom_adapter_xyz}" rpy="${custom_adapter_rpy}"/>
     </joint>
 
+    <!-- Coordinate-only mount link. Gripper inertia comes from the official Robotiq macro. -->
     <link name="${prefix}robotiq_mount_link"/>
     <joint name="${prefix}robotiq_mount_joint" type="fixed">
       <parent link="${prefix}bota_to_robotiq_adapter_link"/>
