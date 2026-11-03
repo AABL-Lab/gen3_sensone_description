@@ -8,7 +8,7 @@
     custom_adapter_xyz:='0 0 0.03808' custom_adapter_rpy:='-1.5707963267948966 1.5707963267948966 0'
     gripper_xyz:='-0.01904 0 0' gripper_rpy:='1.5707963267948966 0 -1.5707963267948966'
     sensor_mesh_yaw:='0.785398' adapter_mesh_roll:='-1.964545'
-    ft_xyz:='0 0 0' ft_rpy:='0 0 0'">
+    ft_xyz:='0 0 0' ft_rpy:='0 0 3.14159265'">
 
     <link name="${prefix}kr13897_link">
       <!-- KR13890 flange ONLY, official mass 0.102 kg; PCB, fasteners and cable excluded. -->
@@ -44,6 +44,15 @@
     <joint name="${prefix}sensone_ft_joint" type="fixed">
       <parent link="${prefix}sensone_link"/><child link="${prefix}sensone_ft_frame"/>
       <origin xyz="${ft_xyz}" rpy="${ft_rpy}"/>
+    </joint>
+    
+    <!-- Driver wrench frame alias. Orientation and origin are provisional;
+         validate physical FT axes before gravity compensation. -->
+    <link name="${prefix}bota_ft_sensor_wrench"/>
+    <joint name="${prefix}bota_wrench_frame_joint" type="fixed">
+      <parent link="${prefix}sensone_ft_frame"/>
+      <child link="${prefix}bota_ft_sensor_wrench"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
     <link name="${prefix}bota_to_robotiq_adapter_link">
